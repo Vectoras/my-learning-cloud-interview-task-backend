@@ -2,6 +2,8 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+// importing custom middleware
+import { addRequestFeedbackMiddleware } from "./middleware/response_format/add_request_feedback.js";
 // importing routers
 import { userRouter } from "./user/user.router.js";
 
@@ -25,10 +27,12 @@ app.use(
     methods: ["OPTIONS", "GET", "PUT", "POST"],
   }),
 );
+app.use(express.json());
+app.use(addRequestFeedbackMiddleware);
 
 // routers
 
-app.use("/users",userRouter)
+app.use("/users", userRouter);
 
 // test route
 app

@@ -24,7 +24,7 @@ try {
 }
 
 if (dbSuccessfulConnection) {
-  console.log("\nSuccessfully connected to the database");
+  console.log("Successfully connected to the database");
 
   // start the server
   httpServer.listen(PORT, () => {

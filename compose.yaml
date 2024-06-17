@@ -35,11 +35,14 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}_database
     image: mongo
     restart: always
-    command: --quiet
+    command: 
+      - '--quiet'
+      - '--logpath'
+      - '/var/log/mongodb/mongod.log'
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: ${COMPOSE_PROJECT_NAME}
+      MONGO_INITDB_DATABASE: development
     ports:
       - 27017:27017
     volumes:

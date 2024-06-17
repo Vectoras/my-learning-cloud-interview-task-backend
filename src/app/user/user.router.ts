@@ -16,7 +16,7 @@ userRouter
     res.json({ status: "The userRouter is up and running" });
   });
 
-// routes
+// routers
 
 userRouter
   //
