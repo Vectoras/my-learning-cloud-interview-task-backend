@@ -9,7 +9,10 @@
     "start:dist": "node ./dist/index.js",
     "build": "tsc",
     "dev": "vite-node --watch ./src/index.ts",
-    "dev:run": "vite-node --watch ./src/index.ts"
+    "dev:run": "vite-node --watch ./src/index.ts",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+
   },
   "keywords": [],
   "author": "",
@@ -17,6 +20,7 @@
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.14.2",
+    "prettier": "3.3.2",
     "typescript": "^5.4.5",
     "vite-node": "^1.6.0"
   }
