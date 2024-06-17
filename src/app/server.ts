@@ -2,6 +2,8 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+// importing routers
+import { userRouter } from "./user/user.router.js";
 
 // creating the app
 export const app = express();
@@ -26,7 +28,7 @@ app.use(
 
 // routers
 
-
+app.use("/users",userRouter)
 
 // test route
 app

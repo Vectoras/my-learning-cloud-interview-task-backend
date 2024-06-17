@@ -11,7 +11,7 @@ services:
       context: ./
       target: development
     env_file:
-      - ./.env
+      - .env
     ports:
       - 8080:8080
       - 443:443
@@ -27,9 +27,9 @@ services:
             - node_modules/
             - .prettierignore
             - readme.md
-        - action: sync
+        - action: rebuild
           path: ./src/
-          target: /app/src/
+          # target: /app/src/
   # database
   database:
     container_name: ${COMPOSE_PROJECT_NAME}_database
