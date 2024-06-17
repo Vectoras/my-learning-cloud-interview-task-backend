@@ -6,7 +6,7 @@ RUN npm install -g pnpm
 # development (to be used with docker compose --watch)
 FROM base AS development
 ENV NODE_ENV=development
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 443
 COPY ./src /app/src
 COPY ./package.json /app/package.json
@@ -27,7 +27,7 @@ RUN pnpm run build
 # production - !!! NOT TESTED
 FROM base AS production
 ENV NODE_ENV=production
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 443
 COPY --from=build /build/package.json /app/package.json
 COPY --from=build /build/pnpm-lock.yaml /app/pnpm-lock.yaml

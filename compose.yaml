@@ -12,12 +12,16 @@ services:
       target: development
     env_file:
       - ./.env
+    ports:
+      - 8080:8080
+      - 443:443
     develop:
       watch:
         - action: rebuild
           path: ./
           ignore:
             - src/
+            - .git/
             - .vscode/
             - dist/
             - node_modules/
