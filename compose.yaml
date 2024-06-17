@@ -1,0 +1,60 @@
+name: mlc_task_backend
+
+services:
+  # app
+  app:
+    container_name: ${COMPOSE_PROJECT_NAME}_app
+    depends_on:
+      - database
+    restart: always
+    build:
+      context: ./
+      target: development
+    env_file:
+      - ./.env
+    develop:
+      watch:
+        - action: rebuild
+          path: ./
+          ignore:
+            - src/
+            - .vscode/
+            - dist/
+            - node_modules/
+            - .prettierignore
+            - readme.md
+        - action: sync
+          path: ./src/
+          target: /app/src/
+  # database
+  database:
+    container_name: ${COMPOSE_PROJECT_NAME}_database
+    image: mongo
+    restart: always
+    command: --quiet
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: ${COMPOSE_PROJECT_NAME}
+    ports:
+      - 27017:27017
+    volumes:
+      - db-data:/data/db
+  # dev interface for mongo db
+  # mongo-express:
+  #   depends_on:
+  #     - database
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_SERVER: database
+  #     ME_CONFIG_MONGODB_PORT: 27017
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: password
+  #     ME_CONFIG_BASICAUTH: false
+
+volumes:
+  db-data:
+    name: ${COMPOSE_PROJECT_NAME}_db_data
