@@ -1,6 +1,7 @@
+// importing npm modules
+import bcrypt from "bcrypt";
 // importing models
 import { UserModel } from "../../models/user.model.js";
-
 // importing types
 import type { Request, Response } from "express";
 import type { Body, ResponseFormat } from "../../types/express.types.js";
@@ -42,11 +43,14 @@ const validateDateOfBirth = (dateOfBirth?: unknown): boolean => {
 
 // --------------------------------------------------------------
 
-export const getUser = (req: Request, res: Response) => {
-  res.send("This will get details about one user from db");
+export const getUser = (req: Request, res: Response): Response => {
+  return res.send("This will get details about one user from db");
 };
 
-export const addUser = async (req: Request, res: Response) => {
+export const addUser = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
   try {
     // --- 1 --- extract received data
 
@@ -63,8 +67,8 @@ export const addUser = async (req: Request, res: Response) => {
     if (!validateEmail(email)) invalidData.push("email");
     if (!validateDateOfBirth(dateOfBirth)) invalidData.push("dateOfBirth");
 
-    if (invalidData.length)
-      res.status(400).json({
+    if (invalidData.length) {
+      return res.status(400).json({
         success: false,
         messages: [
           {
@@ -76,13 +80,14 @@ export const addUser = async (req: Request, res: Response) => {
           invalidData, // TO DO - we may want to remove this for security purposes
         },
       });
+    }
 
-    // --- 3 --- create new user in the database
+    // --- 3 --- create a new user in the database
 
     try {
       await new UserModel({
-        username,
-        password,
+        username,        
+        password: bcrypt.hashSync(password as string, 10),
         firstname,
         lastname,
         email,
@@ -92,7 +97,7 @@ export const addUser = async (req: Request, res: Response) => {
       const errorString =
         error instanceof Error ? `${error.name}: ${error.message}` : "Unknown";
 
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         messages: [
           {
@@ -108,7 +113,7 @@ export const addUser = async (req: Request, res: Response) => {
 
     // --- * ---
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       messages: [
         {
@@ -118,11 +123,13 @@ export const addUser = async (req: Request, res: Response) => {
       ],
       data: {},
     } as ResponseFormat);
+
+    // ---------
   } catch (error) {
     console.log(error);
 
     const errorString =
       error instanceof Error ? `${error.name}: ${error.message}` : "Unknown";
-    res.status(500).json({ internalServerError: errorString });
+    return res.status(500).json({ internalServerError: errorString });
   }
 };
