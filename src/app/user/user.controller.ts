@@ -1,10 +1,15 @@
 // importing npm modules
 import bcrypt from "bcrypt";
 // importing models
-import { UserModel } from "../../models/user.model.js";
+import { User, UserModel } from "../../models/user.model.js";
 // importing types
 import type { Request, Response } from "express";
-import type { Body, ResponseFormat } from "../../types/express.types.js";
+import type {
+  Body,
+  ResponseData,
+  ResponseFormat,
+  ResponseMessage,
+} from "../../types/express.types.js";
 
 // --- functions -------------------------------------------------
 
@@ -43,8 +48,97 @@ const validateDateOfBirth = (dateOfBirth?: unknown): boolean => {
 
 // --------------------------------------------------------------
 
-export const getUser = (req: Request, res: Response): Response => {
-  return res.send("This will get details about one user from db");
+export const getUser = async (
+  req: Request,
+  res: Response,
+): Promise<Response> => {
+  try {
+    // --- 1 --- extract received data
+
+    const { username, email } = req.body as Body;
+
+    // --- 2 --- validate
+
+    if (!username && !email)
+      return res.status(400).json({
+        success: false,
+        messages: [
+          {
+            type: "error",
+            content: `No username or email has been provided!`,
+          },
+        ],
+        data: {},
+      } as ResponseFormat);
+
+    const invalidData: string[] = [];
+    if (!validateUsername(username)) invalidData.push("username");
+    if (!validateEmail(email)) invalidData.push("email");
+
+    // --- 3 --- retrieve the user by either username or email
+
+    let userDb: User | null = null;
+
+    if (username && !invalidData.includes("username")) {
+      userDb = await UserModel.findOne({ username });
+    } else if (email && !invalidData.includes("email")) {
+      userDb = await UserModel.findOne({ email });
+    }
+
+    const user =
+      !userDb ? null : (
+        {
+          username: userDb.username,
+          firstname: userDb.firstname,
+          lastname: userDb.lastname,
+          email: userDb.email,
+          dateOfBirth: userDb.dateOfBirth,
+        }
+      );
+
+    // --- 4 --- build the response messages and data
+
+    const messages: ResponseMessage[] = [];
+    const data: ResponseData = {};
+
+    if (invalidData.length) {
+      messages.push({
+        type: "error",
+        content: `One ore more pieced of the provided data are missing or invalid!`,
+      });
+      data.invalidData = invalidData;
+    }
+
+    if (user) {
+      messages.push({
+        type: "success",
+        content: `Successfully retrieved the user`,
+      });
+      data.user = user;
+    } else {
+      messages.push({
+        type: "warning",
+        content: `No user has been found for the provided data`,
+      });
+      data.user = user;
+    }
+
+    // --- * ---
+
+    return res.status(200).json({
+      success: true,
+      messages,
+      data,
+    } as ResponseFormat);
+
+    // ---------
+  } catch (error) {
+    console.log(error);
+
+    const errorString =
+      error instanceof Error ? `${error.name}: ${error.message}` : "Unknown";
+    return res.status(500).json({ internalServerError: errorString });
+  }
 };
 
 export const addUser = async (
@@ -86,7 +180,7 @@ export const addUser = async (
 
     try {
       await new UserModel({
-        username,        
+        username,
         password: bcrypt.hashSync(password as string, 10),
         firstname,
         lastname,

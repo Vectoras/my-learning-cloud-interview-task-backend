@@ -2,7 +2,7 @@ export type Body = Record<string | number, unknown>;
 
 // ----------
 
-type ResponseMessage = {
+export type ResponseMessage = {
   type: "success" | "error" | "warning" | "info";
   content: string;
 };
