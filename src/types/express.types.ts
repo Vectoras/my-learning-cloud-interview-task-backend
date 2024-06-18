@@ -7,10 +7,12 @@ export type ResponseMessage = {
   content: string;
 };
 
+export type ResponseData = Record<string | number, unknown>;
+
 export type ResponseFormat = {
   success: boolean;
   messages: ResponseMessage[];
-  data: Record<string | number, unknown>;
+  data: ResponseData;
 };
 
 // -----------
