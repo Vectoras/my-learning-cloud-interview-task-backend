@@ -21,6 +21,7 @@ userRouter
 userRouter
   //
   .route("/user")
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   .get(getUser)
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   .post(addUser);
