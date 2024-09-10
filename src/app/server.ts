@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import passport from "passport";
 // importing custom middleware
 import { addRequestFeedbackMiddleware } from "./middleware/response_format/add_request_feedback.js";
 // importing routers
@@ -29,6 +30,7 @@ app.use(
 );
 app.use(express.json());
 app.use(addRequestFeedbackMiddleware);
+app.use(passport.initialize());
 
 // routers
 
